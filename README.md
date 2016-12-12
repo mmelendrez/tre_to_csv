@@ -1,5 +1,11 @@
 # nwk_to_csv
 
+## Install
+
+```
+pip install git+https://github.com/biopython/biopython.git
+```
+
 ## Usage
 
 ```
