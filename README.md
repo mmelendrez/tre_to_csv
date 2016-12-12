@@ -2,9 +2,17 @@
 
 ## Install
 
-```
-pip install git+https://github.com/biopython/biopython.git
-```
+1. Install compiler to compile biopython
+
+   ```
+   sudo yum install gcc gcc-c++
+   ```
+
+1. Install latest development for biopython (v1.69)
+
+   ```
+   pip install git+https://github.com/biopython/biopython.git
+   ```
 
 ## Usage
 
