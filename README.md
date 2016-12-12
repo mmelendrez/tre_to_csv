@@ -17,7 +17,7 @@
 ## Usage
 
 ```
-python tre_to_csv.py <input.nwk|input.tre>
+python tre_to_csv.py <input.tre>
 ```
 
 ### Output
