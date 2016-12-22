@@ -77,6 +77,9 @@ Vagrant.configure("2") do |config|
     echo "export PATH=/home/vagrant/miniconda2/bin:$PATH" >> ~/.bashrc
     . ~/.bashrc
     conda install -y ipython-notebook
+    # Disable password prompt for notebooks
+    mkdir -p .jupyter
+    echo "c.NotebookApp.token = 'u''" > .jupyter/jupyter_notebook_config.py
     git clone https://github.com/mmelendrez/tre_to_csv.git 
     git clone https://github.com/necrolyte2/myhome.git
     ln -s myhome/.vimrc
