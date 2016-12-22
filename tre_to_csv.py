@@ -14,28 +14,57 @@ def parse_args():
   return parser.parse_args()
 
 def main(args):
-  txt = None
-  with open(args.treefile) as fh:
-      txt = StringIO(fh.read().replace('-', '_'))
-  t = Phylo.read(txt, 'nexus')
+  t = Phylo.read(args.treefile, 'nexus')
 
   nonterms = t.get_nonterminals()
   terms = t.get_terminals()
 
   attrs = ['name', 'branch_length', 'width', 'confidence']
 
-  cols = split_comment(nonterms[0].comment)
-  headers = attrs[:]
-
-  # assumes all headers are always in the same order for all nonterminals (nodes) 
-
-  for c in cols:
-      headers.append(c[0])
-      
-  print ','.join(headers)
-
   n = nodes(nonterms, attrs) + nodes(terms, attrs)
-  print '\n'.join(n)
+  headers = get_unique_headers(n)
+  print ','.join(headers)
+  csv = get_csv_values(n, headers)
+  print '\n'.join(csv)
+
+def get_csv_values(nodes_list, headers):
+  r = []
+  for x in nodes_list:
+    t = []
+    d = dict(x)
+    for h in headers:
+      v = d.get(h, '')
+      t.append(v)
+    r.append(','.join(t))
+  return r
+
+"""
+n = [
+  [
+    ('one', '1')
+  ],
+  [
+    ('one', '1'),
+    ('two', '2')
+  ]
+]
+h = ['one', 'two']
+x = get_csv_values(n, h)
+assert x == ['1,', '1,2']
+"""
+
+def get_unique_headers(nodes_list):
+  unique_headers = set()
+  for x in nodes_list:
+    for y in x:
+      unique_headers.add(y[0])
+  return sorted(list(unique_headers))
+
+"""
+n = [[('one', '1')], [('one', '1'), ('two', '2')]]
+x = get_unique_headers(n)
+assert x == ['one', 'two'], x
+"""
 
 def split_comment(comment):
     kv = re.split(',(?=[a-zA-Z])', comment[2:-1])
@@ -85,19 +114,21 @@ def split_bracket(kv_str):
 x = split_bracket('key={1.0,2.0}')
 assert x == [('key_start', '1.0'), ('key_end', '2.0')], x
 """
+
 def nodes(clades, attrs):
+    '''
+    Returns list of lists of tuples
+    '''
     r = []
     mcctre = []
     for nonterm in clades:
         for attr in attrs:
-            mcctre.append(str(getattr(nonterm, attr)))
-        meta = split_comment(nonterm.comment)
-        for m in meta:
-            mcctre.append(m[1])
-        r.append(",".join(mcctre))
+            kv = (attr, str(getattr(nonterm, attr)))
+            mcctre.append(kv)
+        mcctre += split_comment(nonterm.comment)
+        r.append(mcctre)
         mcctre = []
     return r
-
 
 if __name__ == "__main__":
   args = parse_args()
