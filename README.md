@@ -1,4 +1,4 @@
-# nwk_to_csv
+# tre_to_csv
 
 ## Install
 
